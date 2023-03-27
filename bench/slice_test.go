@@ -36,25 +36,9 @@ func BenchmarkSlice_Arena(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				s = s[:0] // reset slice
 				for i := 0; i < n; i++ {
-					if len(s) < cap(s) {
-						s = append(s, i)
-					} else {
-						s = arena.Append(mem, s, i)
-					}
+					s = arena.Append(mem, s, i)
 				}
 			}
 		})
 	}
-}
-
-func newStructAllocClone() *T {
-	mem := arena.New()
-	defer arena.Free(mem)
-
-	obj := arena.NewAlloc[T](mem)
-	obj.data = []int{1, 2}
-	obj.len = 2
-	clone := arena.Clone(obj)
-
-	return clone
 }
