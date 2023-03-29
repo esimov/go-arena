@@ -6,14 +6,17 @@ import (
 	"runtime"
 )
 
+// New allocates a new memory arena.
 func New() *arena.Arena {
 	return arena.NewArena()
 }
 
+// NewAlloc creates a new T value in the allocated memory arena.
 func NewAlloc[T any](a *arena.Arena) *T {
 	return arena.New[T](a)
 }
 
+// Free frees the memory arena without the garbage collection overhead.
 func Free(a *arena.Arena) {
 	if a == nil {
 		return
@@ -21,10 +24,15 @@ func Free(a *arena.Arena) {
 	(*arena.Arena)(a).Free()
 }
 
+// Clone returns a shallow copy of the allocated object in the memory arena.
+// After freeing up the arena the cloned object will be moved into the heap,
+// which means that it can be referenced after the arena is cleaned up.
+// This out-lived object will be cleaned up when the GC cycle will pick it up.
 func Clone[T any](s T) T {
 	return arena.Clone(s)
 }
 
+// MakeSlice creates a new slice and puts it into the arena.
 func MakeSlice[T any](a *arena.Arena, l, c int) []T {
 	if a == nil {
 		return make([]T, l, c)
@@ -32,6 +40,7 @@ func MakeSlice[T any](a *arena.Arena, l, c int) []T {
 	return arena.MakeSlice[T](a, l, c)
 }
 
+// Append is a helper method to populate the arena allocated slice.
 func Append[T any](a *arena.Arena, data []T, v T) []T {
 	if a == nil {
 		return append(data, v)
@@ -52,6 +61,7 @@ func Append[T any](a *arena.Arena, data []T, v T) []T {
 	return data
 }
 
+// PrintStats prints various information related to the memory allocations.
 func PrintStats() {
 	var mem runtime.MemStats
 	runtime.ReadMemStats(&mem)
