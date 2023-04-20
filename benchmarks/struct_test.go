@@ -17,7 +17,7 @@ func BenchmarkSimpleStruct_NoArena(b *testing.B) {
 	for _, n := range testCases {
 		b.Run(fmt.Sprintf("n=%d", n), func(b *testing.B) {
 			for x := 0; x < b.N; x++ {
-				_ = &Struct[int]{}
+				_ = Struct[int]{}
 			}
 		})
 	}
@@ -39,12 +39,11 @@ func BenchmarkSimpleStruct_Arena(b *testing.B) {
 func BenchmarkComplexStruct_NoArena(b *testing.B) {
 	for _, n := range testCases {
 		b.Run(fmt.Sprintf("n=%d", n), func(b *testing.B) {
-			obj := &Struct[int]{
+			obj := Struct[int]{
 				data: make([]int, 0, n),
 				len:  n,
 			}
 			for i := 0; i < b.N; i++ {
-				obj.data = obj.data[:0] // reset slice
 				for i := 0; i < n; i++ {
 					obj.data = append(obj.data, i)
 				}
@@ -64,7 +63,6 @@ func BenchmarkComplexStruct_Arena(b *testing.B) {
 			obj.data = arena.MakeSlice[int](mem, 0, n)
 
 			for i := 0; i < b.N; i++ {
-				obj.data = obj.data[:0]
 				for i := 0; i < n; i++ {
 					obj.data = arena.Append(mem, obj.data, i)
 				}
@@ -77,13 +75,12 @@ func BenchmarkComplexStruct_IterNoArena(b *testing.B) {
 	for _, n := range testCases {
 		b.Run(fmt.Sprintf("n=%d", n), func(b *testing.B) {
 			for x := 0; x < 1000; x++ {
-				obj := &Struct[int]{
+				obj := Struct[int]{
 					len:  n,
 					data: make([]int, 0, n),
 				}
 
 				for i := 0; i < b.N; i++ {
-					obj.data = obj.data[:0]
 					for i := 0; i < n; i++ {
 						obj.data = append(obj.data, i)
 					}
@@ -105,7 +102,6 @@ func BenchmarkComplexStruct_IterArena(b *testing.B) {
 				obj.data = arena.MakeSlice[int](mem, 0, n)
 
 				for i := 0; i < b.N; i++ {
-					obj.data = obj.data[:0]
 					for i := 0; i < n; i++ {
 						obj.data = arena.Append(mem, obj.data, i)
 					}
