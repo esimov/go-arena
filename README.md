@@ -1,6 +1,6 @@
 # go-arena
 
-Testing and benchmarking the new experimental memory management system called arenas, introduced in Go 1.20.
+Testing and benchmarking the new experimental memory management system called **arenas**, introduced in Go 1.20.
 
 ## Benchmarks
 
@@ -12,6 +12,8 @@ You can analyze the performance of the new memory management system by running t
 $ GOEXPERIMENT=arenas go test -asan -v ./... -bench="." -cover -benchmem
 ```
 It's important to use the `GOEXPERIMENT=arenas` environment variable. The `-asan` flag means to use the program with the memory address sanitizer option enabled. 
+
+### Results:
 
 ```bash
 goos: linux
@@ -79,4 +81,14 @@ PASS
 
 The test folder contains some simple examples of how you can use the memory arena together with some analysis about the number of GC calls and heap allocations.
 
+```bash
+$ GOEXPERIMENT=arenas go run -asan tests/gc.go
 
+Alloc = 0 MiB   TotalAlloc = 800 MiB    Sys = 26 MiB    NumGC = 1
+Alloc = 3 MiB   TotalAlloc = 1676 MiB   Sys = 50 MiB    NumGC = 9
+Alloc = 0 MiB   TotalAlloc = 1753 MiB   Sys = 50 MiB    NumGC = 31
+```
+
+
+## Author
+* Endre Simo ([@simo_endre](https://twitter.com/simo_endre))
