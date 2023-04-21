@@ -79,7 +79,7 @@ BenchmarkComplexStruct_IterArena/n=100000-16                   1        47030961
 PASS
 ```
 
-The test folder contains some simple examples of how you can use the memory arena together with some analysis about the number of GC calls and heap allocations.
+The test folder contains a few simple examples of how you can use the memory arena together with some analysis about the number of GC calls and heap allocations.
 
 ```bash
 $ GOEXPERIMENT=arenas go run -asan tests/gc.go
