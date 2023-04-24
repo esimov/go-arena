@@ -77,6 +77,17 @@ BenchmarkComplexStruct_IterArena/n=100000-16                   1        47030961
 PASS
 ```
 
+As we have intuited the arena outperformed significantly the standard memory allocation both in terms of `allocations/operations` and `bytes/operations`. Though one interesting result got my attention, specifically when we tested the arena allocation with a slice with a capacity of 100000. Somehow surprisingly the results are a little worse than the results obtained from the standard allocations. The explication is coming from checking the arena source code. In the runtime/arena package we have the following on line [351](https://github.com/golang/go/blob/d9c29ec6a54f929f4b0736db6b7598a4c2305e5e/src/runtime/arena.go#L351):
+
+> Alloc reserves space in the current chunk or calls refill and reserves space in a new chunk.
+
+What does this means? It means that the arena pre-allocates memory space in chunks. If the data does not fits in the current chunk then it reserves space in a new chunk. Then further down under the `refill()` method , which is invoked within the `alloc()`, we get the following:
+
+> Refill inserts the current arena chunk onto the full list and obtains a new one, either from the partial list or allocating a new one, both from mheap.
+
+I assume that this is the reason why on the last benchmark with a slice having a capacity of 100000 this kind of re-allocation is happening more frequently.
+
+## GC test
 The `test` folder contains a few simple examples of how you can use the memory arena together with some analysis about the number of GC calls and heap allocations.
 
 ```bash
@@ -87,6 +98,7 @@ Alloc = 3 MiB   TotalAlloc = 1676 MiB   Sys = 50 MiB    NumGC = 9
 Alloc = 0 MiB   TotalAlloc = 1753 MiB   Sys = 50 MiB    NumGC = 31
 ```
 
+For a detailed explanation I wrote an article here: https://medium.com/@esimov/go-memory-arenas-1ba930bf79c1
 
 ## Author
 * Endre Simo ([@simo_endre](https://twitter.com/simo_endre))
