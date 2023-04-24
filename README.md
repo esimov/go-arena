@@ -4,12 +4,10 @@ Testing and benchmarking the new experimental memory management system called **
 
 ## Benchmarks
 
-This project contains two folders: a `benchmarks` and a `test` folder. The benchmarks folder contains different benchmarks, comparing the arena type of memory allocation with the standard allocation. 
-
 You can analyze the performance of the new memory management system by running the following command: 
 
 ```bash
-$ GOEXPERIMENT=arenas go test -asan -v ./... -bench="." -cover -benchmem
+$ GOEXPERIMENT=arenas go test -asan -v ./benchmarks/... -bench="." -cover -benchmem
 ```
 It's important to use the `GOEXPERIMENT=arenas` environment variable. The `-asan` flag means to use the program with the memory address sanitizer option enabled. 
 
@@ -79,7 +77,7 @@ BenchmarkComplexStruct_IterArena/n=100000-16                   1        47030961
 PASS
 ```
 
-The test folder contains a few simple examples of how you can use the memory arena together with some analysis about the number of GC calls and heap allocations.
+The `test` folder contains a few simple examples of how you can use the memory arena together with some analysis about the number of GC calls and heap allocations.
 
 ```bash
 $ GOEXPERIMENT=arenas go run -asan tests/gc.go
